@@ -3,7 +3,7 @@
 The intent behind writing this piece os code was to write the entire game from scratch. This was a development to only bring forward the functionality hence the UI is very rudimentary.
 ![Screenshot 2020-06-12 at 10.16.23 PM](./Screenshot2020-06-12at10.16.23PM.png)
 
-Live: [demo](https://keith3895.github.io/conways-game-of-life)
+Live: [demo](https://keith3895.github.io/conways-game-of-life/index.html)
 ## Rules of the game:
 
 The rules of the game are explained clearly in it's [Wikipedia entry](http://en.wikipedia.org/wiki/Conway%27s_Game_of_Life). The relevant portion is quoted here:
@@ -31,4 +31,4 @@ The rules of the game are explained clearly in it's [Wikipedia entry](http://en.
 Just opening the html([index.html](./index.html)) in the browser should do. 
 
 the hosted demo is on git pages for this repo.
-[demo](https://keith3895.github.io/conways-game-of-life)
+[demo](https://keith3895.github.io/conways-game-of-life/index.html)
