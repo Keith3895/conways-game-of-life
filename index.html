@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>conway's game of life</title>
+</head>
+
+<body>
+    <canvas id="myCanvas" width='600px' height="600px" style="border:1px solid #000000;">
+    </canvas>
+    <button id='play'>play button</button>
+    <button id='stop'>stop button</button>
+    <div style="float: left;">
+        <h6>
+            try one of these patterns
+        </h6>
+        <img src="./patterns.gif" alt="">
+    </div>
+
+    <p>
+        source code available on 
+        <a href="https://github.com/Keith3895/conways-game-of-life">github</a>
+    </p>
+    <script>
+        class life {
+            x;
+            y;
+            w = 20;
+            h = 20;
+            lifeCount;
+            _isAlive;
+            get isAlive() {
+                return this._isAlive;
+            }
+            set isAlive(val) {
+                this._isAlive = val;
+                if (val)
+                    this.fill();
+                else {
+                    this.removeFill();
+                    this.draw();
+                }
+            }
+            rectanglePath = new Path2D();
+            ctx;
+            constructor(ct, x, y) {
+                this.ctx = ct;
+                this.x = x;
+                this.y = y;
+                this.rectanglePath.rect(this.x, this.y, this.w, this.h);
+            }
+            draw() {
+                this.ctx.stroke(this.rectanglePath);
+            }
+            fill() {
+                this.ctx.fill(this.rectanglePath);
+            }
+            removeFill() {
+                this.ctx.clearRect(this.x, this.y, this.w, this.h);
+            }
+        }
+
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+
+
+        let globalIntervalLoop;
+        universe = Create2DArray(30, 30, false);
+        universerCanvas = [];
+        drawUniverse(universe);
+        function drawUniverse(map) {
+            map.forEach((el, i) => {
+                if (!universerCanvas[i])
+                    universerCanvas[i] = [];
+                el.forEach((cell, j) => {
+                    universerCanvas[i][j] = new life(ctx, j * 20, i * 20);
+                    universerCanvas[i][j].draw();
+                    universerCanvas[i][j].isAlive = cell;
+                    if (cell == 1)
+                        universerCanvas[i][j].fill();
+                });
+            });
+        }
+        function Create2DArray(rows, column, stuff) {
+            var arr = [];//new Array(rows).fill(new Array(column).fill(stuff));
+            for (i = 0; i < rows; i++) {
+                arr[i] = [];
+                for (j = 0; j < column; j++)
+                    arr[i][j] = stuff;
+            }
+            return arr;
+        }
+
+
+        canvas.addEventListener('click', function (event) {
+            universerCanvas.forEach((el, i) => {
+                el.forEach((cell, j) => {
+                    if (ctx.isPointInPath(cell.rectanglePath, event.offsetX, event.offsetY)) {
+                        cell.isAlive = !cell.isAlive;
+                        universe[i][j] = !universe[i][j];
+                    }
+                });
+            });
+        });
+
+
+        function play(e) {
+            globalIntervalLoop = setInterval(() => {
+                universe = nextGen(universe);
+                drawUniverse(universe);
+            }, 1000);
+            document.getElementById('play').disabled = true;
+            document.getElementById('stop').disabled = false;
+        }
+        function stop(e) {
+            clearInterval(globalIntervalLoop);
+            document.getElementById('play').disabled = false;
+            document.getElementById('stop').disabled = true;
+        }
+
+        function nextGen(previousGen) {
+            let newGen = [];
+            previousGen.forEach((el, i) => {
+                newGen[i] = [];
+                el.forEach((cell, j) => {
+
+                    // cell.lifeCount = lifeCount;
+                    newGen[i][j] = conwaysRule(cell, previousGen, i, j);
+
+                });
+            });
+            return newGen;
+        }
+        /**
+         * pure fuction to impliment rules
+         * */
+        function conwaysRule(cell, matrix, rowIndex, colIndex) {
+            let lifeCount = 0;
+            for (let tempI = -1; tempI <= 1; tempI++) {
+                for (let tempJ = -1; tempJ <= 1; tempJ++) {
+                    try {
+                        if (matrix[rowIndex + tempI][colIndex + tempJ])
+                            lifeCount++;
+                    } catch (e) { }
+                }
+            }
+            if (cell)
+                lifeCount = lifeCount > 0 ? lifeCount - 1 : 0;
+
+            if (!cell && lifeCount == 3) {
+                return true;
+            } else if (cell && (lifeCount > 3 || lifeCount < 2)) {
+                return false;
+            } else {
+                return cell;
+            }
+        }
+        document.getElementById('play').addEventListener('click', play);
+        document.getElementById('stop').addEventListener('click', stop);
+        document.getElementById('stop').disabled = true;
+
+    </script>
+</body>
+
+</html>
